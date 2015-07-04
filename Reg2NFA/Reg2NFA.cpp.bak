@@ -1,0 +1,205 @@
+
+#include "Reg2NFA.h"
+
+void SetPriorityMap();
+
+void MakeLink();
+void MakeSelect();
+void MakeClosure();
+void MakeClosurePlus();
+void MakeGroup();
+
+void Reduce();
+void ShiftOperator(char Operator);
+
+void NodeGen(const char *s);
+
+Stack<NFAPack*> PackStack;
+Stack<char> OperatorStack;
+map<char, int> PriorityMap;
+int id = 0;
+
+void SetPriorityMap()
+{
+	PriorityMap.insert(pair<char, int>(EOF, -1));
+	
+	PriorityMap.insert(pair<char, int>(LINK_OPERATOR, 0));
+
+	PriorityMap.insert(pair<char, int>('|', 1));
+
+	PriorityMap.insert(pair<char, int>('+', 2));
+	PriorityMap.insert(pair<char, int>('*', 2));
+
+	PriorityMap.insert(pair<char, int>('(', -1));
+	PriorityMap.insert(pair<char, int>(')', 3));
+}
+
+void MakeLink()
+{
+	NFAPack *p1 = PackStack.top(); PackStack.pop();
+	NFAPack *p0 = PackStack.top(); PackStack.pop();
+
+	p0->Tail->LinkNode(EMPTY_TRANSFORM, p1->Head);
+	p0->Tail = p1->Tail;
+
+	delete p1;
+	PackStack.push(p0);
+}
+
+void MakeSelect()
+{
+	NFAPack *p1 = PackStack.top(); PackStack.pop();
+	NFAPack *p0 = PackStack.top(); PackStack.pop();
+	NFANode *n0 = new NFANode();
+	NFANode *n1 = new NFANode();
+
+	n0->LinkNode(EMPTY_TRANSFORM, p0->Head);
+	n0->LinkNode(EMPTY_TRANSFORM, p1->Head);
+
+	p0->Tail->LinkNode(EMPTY_TRANSFORM, n1);
+	p1->Tail->LinkNode(EMPTY_TRANSFORM, n1);
+
+	p0->Head = n0;
+	p0->Tail = n1;
+
+	delete p1;
+	PackStack.push(p0);
+}
+
+void MakeClosure()
+{
+	NFAPack *p0 = PackStack.top(); PackStack.pop();
+	NFANode *n0 = new NFANode();
+	NFANode *n1 = new NFANode();
+
+	n0->LinkNode(EMPTY_TRANSFORM, p0->Head);
+	p0->Tail->LinkNode(EMPTY_TRANSFORM, n1);
+	n0->LinkNode(EMPTY_TRANSFORM, n1);
+
+	p0->Head = n0;
+	p0->Tail = n1;
+
+	PackStack.push(p0);
+}
+
+void MakeClosurePlus()
+{
+	NFAPack *p0 = PackStack.top(); PackStack.pop();
+	NFANode *n0 = new NFANode();
+	NFANode *n1 = new NFANode();
+
+	n0->LinkNode(EMPTY_TRANSFORM, p0->Head);
+	p0->Tail->LinkNode(EMPTY_TRANSFORM, n1);
+
+	p0->Head = n0;
+	p0->Tail = n1;
+
+	PackStack.push(p0);
+}
+
+void MakeGroup()
+{
+	while (OperatorStack.top() != '(' && OperatorStack.empty() == false)
+		Reduce();
+	if (OperatorStack.top() == '(')
+		OperatorStack.pop();
+}
+
+void Reduce()
+{
+	char LastOperator = OperatorStack.top();
+	OperatorStack.pop();
+	switch (LastOperator)
+	{
+	case LINK_OPERATOR:		// link
+		MakeLink();
+		break;
+	case '|':		// select
+		MakeSelect();
+		break;
+	case '*':		// closure
+		MakeClosure();
+		break;
+	case '+':		// closure plus
+		MakeClosurePlus();
+		break;
+	case ')':		// group
+		MakeGroup();
+		break;
+	case '(':
+		break;
+	case EOF:
+		break;
+	default:
+		break;
+	}
+}
+
+void ShiftOperator(char Operator)
+{
+	int CurPriority = PriorityMap[Operator];
+	if (OperatorStack.empty() == true)
+	{
+		OperatorStack.push(Operator);
+		return;
+	}
+
+	int LastPriority = PriorityMap[OperatorStack.top()];
+	if (CurPriority > LastPriority)
+	{
+		OperatorStack.push(Operator);
+		return;
+	}
+	// Do reduce
+	Reduce();
+	// Retry
+	ShiftOperator(Operator);
+	return;
+}
+
+void NodeGen(const char *s)
+{
+	SetPriorityMap();
+
+	bool PrevIsValue = false;
+	char PrevSymbol = '\0';
+	for (int i = 0; s[i] != '\0'; i++)
+	{
+		char ch = s[i];
+
+		switch (ch)
+		{
+		case '(':
+			if (PrevSymbol != '\0' && PrevSymbol != '(')
+				ShiftOperator(LINK_OPERATOR);
+		case '|':
+		case '+': case '*':
+		case ')':
+			ShiftOperator(ch);
+			PrevIsValue = false;
+
+			break;
+		default:
+			if (PrevSymbol != '\0' && PrevSymbol != '(')
+				ShiftOperator(LINK_OPERATOR);
+
+			NFANode *n0 = new NFANode();
+			NFANode *n1 = new NFANode();
+			n1->LinkNode(ch, n1);
+			NFAPack *np = new NFAPack(n0, n1);
+			PackStack.push(np);
+			PrevIsValue = false;
+
+			break;
+		}
+
+		PrevSymbol = ch;
+	}
+	ShiftOperator(EOF);
+}
+
+int main()
+{
+	NodeGen("ab(cd+ef*)*g");
+	return 0;
+}
