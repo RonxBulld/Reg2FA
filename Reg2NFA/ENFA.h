@@ -5,6 +5,7 @@
 #include <vector>
 
 #define EMPTY_TRANSFORM '\0'
+#define MAX_CHARACTER 128
 
 class NFAPack
 {
@@ -17,17 +18,10 @@ class ENFA
 {
 public:
 	std::set<int> States;
-	char Alphabet[128];
-	int AlphabetCounter = 0;
+	std::set<char> Alphabet;
 	int StartState;
 	int FinalState;
 	std::vector<std::set<int>**> TransMatrix;
-
-	ENFA();
-	void InitAlphabet(const char *s);
-	void InitAlphabet(char c);
-	char FindAlpha(int AlphaID);
-	int RequestAlphaID(char c);
 
 	int NewState();
 	void LinkNode(int src, char c, int dest);

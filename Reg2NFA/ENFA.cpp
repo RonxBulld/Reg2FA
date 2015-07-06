@@ -2,57 +2,18 @@
 #include "ENFA.h"
 
 // --- Unitilies ---------------------------
-ENFA::ENFA()
-{
-	for (int i = 0; i <= 127; i++)
-		this->Alphabet[i] = -1;
-}
-
-void ENFA::InitAlphabet(const char *s)
-{
-	for (int i = 0; s[i] != '\0'; i++)
-	{
-		this->InitAlphabet(s[i]);
-	}
-}
-
-void ENFA::InitAlphabet(char c)
-{
-	if (c <= 127)
-		this->Alphabet[(int)c] = this->AlphabetCounter++;
-}
-
-char ENFA::FindAlpha(int AlphaID)
-{
-	for (char p = 0; p <= 127; p++)
-	{
-		if (this->Alphabet[p] == AlphaID)
-			return p;
-	}
-	// error
-	throw new std::exception("Except character id");
-	return '\0';
-}
-
-int ENFA::RequestAlphaID(char c)
-{
-	if (this->Alphabet[c] != -1)
-		return this->Alphabet[c];
-	else
-		throw new std::exception("This character is not in alphabet.");
-}
 
 // --- Basic -----------------------------
 
 int ENFA::NewState()
 {
-	std::set<int>** np = (std::set<int>**)std::malloc(sizeof(std::set<int>**) * this->AlphabetCounter);
+	std::set<int>** np = (std::set<int>**)std::malloc(sizeof(std::set<int>**) * MAX_CHARACTER);
 	if (np == nullptr)
 	{
 		// error
 		throw new std::exception("Out of memory.");
 	}
-	for (int i = 0; i < this->AlphabetCounter; i++)
+	for (int i = 0; i < MAX_CHARACTER; i++)
 	{
 		np[i] = nullptr;
 	}
@@ -67,16 +28,11 @@ void ENFA::LinkNode(int src, char c, int dest)
 		// error
 		throw new std::exception("No such state number.");
 	}
-	int index = this->RequestAlphaID(c);
-	if (index == -1)
-	{
-		// error
-		throw new std::exception("No such alpha in Alphabet.");
-	}
-	if (*(this->TransMatrix[src] + index) == nullptr)
-		this->TransMatrix[src][index] = new std::set<int>();
+	this->Alphabet.insert(c);
+	if (*(this->TransMatrix[src] + c) == nullptr)
+		this->TransMatrix[src][c] = new std::set<int>();
 	std::set<int>** p = this->TransMatrix[src];
-	std::set<int>* q = *(p + index);
+	std::set<int>* q = *(p + c);
 	q->insert(dest);
 }
 

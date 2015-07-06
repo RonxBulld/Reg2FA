@@ -103,18 +103,17 @@ void NFA2Dot(NFAPack *p)
 	FILE *f;
 	fopen_s(&f, "t.gv", "wt+");
 	fprintf(f, "digraph G\n{\n\trankdir = \"LR\";\n");
-	for (int i = 0; i < NFA->TransMatrix.size(); i++)
+	for (int i = 0; i < (int)NFA->TransMatrix.size(); i++)
 	{
-		for (int c = 0; c < NFA->AlphabetCounter; c++)
+		for (int c = 0; c < MAX_CHARACTER; c++)
 		{
 			std::set<int> *p = NFA->TransMatrix[i][c];
 			if (p == nullptr)
 				continue;
 			for (auto s = p->begin(); s != p->end(); s++)
 			{
-				char ch = NFA->FindAlpha(c);
-				if (ch != '\0')
-					fprintf(f, "\t%d->%d[label=\"%c\"];\n", i, *s, ch);
+				if (c != '\0')
+					fprintf(f, "\t%d->%d[label=\"%c\"];\n", i, *s, c);
 				else
 					fprintf(f, "\t%d->%d[label=\"¦Å\"];\n", i, *s);
 			}
@@ -128,8 +127,6 @@ void NFA2Dot(NFAPack *p)
 int main()
 {
 	NFA = new ENFA();
-	NFA->InitAlphabet(EMPTY_TRANSFORM);
-	NFA->InitAlphabet("abcdefg");
 	InitLexer("ab(cd+e|f*)*g");
 
 	NFAPack *p = ParseStmt();
