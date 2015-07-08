@@ -1,6 +1,8 @@
 digraph G
 {
 	rankdir = "LR";
+	node[shape=circle];
+	21[shape=doublecircle];
 	0->1[label="a"];
 	1->2[label="¦Å"];
 	2->3[label="b"];

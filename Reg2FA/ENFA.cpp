@@ -28,12 +28,10 @@ void ENFA::LinkNode(int src, char c, int dest)
 		// error
 		throw new std::exception("No such state number.");
 	}
-	this->Alphabet.insert(c);
-	if (*(this->TransMatrix[src] + c) == nullptr)
+	this->Alphabet[c] = this->Alphabet.size();
+	if (this->TransMatrix[src][c] == nullptr)
 		this->TransMatrix[src][c] = new std::set<int>();
-	std::set<int>** p = this->TransMatrix[src];
-	std::set<int>* q = *(p + c);
-	q->insert(dest);
+	this->TransMatrix[src][c]->insert(dest);
 }
 
 // --- Advanced --------------------------
@@ -105,3 +103,70 @@ NFAPack * ENFA::MakeClosurePlus(NFAPack *p0)
 
 	return p0;
 }
+
+const std::set<int> & ENFA::Move(int q, char c)
+{
+	if (q < 0 || q >= (int)this->TransMatrix.size())
+	{
+		throw new std::exception("Transform start state error.");
+	}
+	if (this->TransMatrix[q][c] == nullptr)
+	{
+		return *(new std::set<int>());
+	}
+	return (*this->TransMatrix[q][c]);
+}
+
+std::set<int> * ENFA::Move(std::set<int> &Q, char c)
+{
+	std::set<int> *qn = new std::set<int>();
+	for (auto p = Q.begin(); p != Q.end(); p++)
+	{
+		std::set<int> tmp = this->Move(*p, c);
+		qn->insert(tmp.begin(), tmp.end());
+	}
+	return qn;
+}
+
+std::set<int> * ENFA::EClosure(std::set<int> &Q)
+{
+	std::set<int> *qn = this->Move(Q, EMPTY_TRANSFORM);
+	qn->insert(Q.begin(), Q.end());
+	if (qn->size() > Q.size())
+	{
+		std::set<int> *nqn = this->EClosure(*qn);
+		delete qn;
+		return nqn;
+	}
+	else
+		return qn;
+}
+
+void ENFA::ToDot(const char *file)
+{
+	FILE *f;
+	fopen_s(&f, file, "wt+");
+	fprintf(f, "digraph G\n{\n\trankdir = \"LR\";\n");
+	fprintf(f, "\tnode[shape=circle];\n");
+	fprintf(f, "\t%d[shape=doublecircle];\n", this->FinalState);
+	for (int i = 0; i < (int)this->TransMatrix.size(); i++)
+	{
+		for (int c = 0; c < MAX_CHARACTER; c++)
+		{
+			std::set<int> *p = this->TransMatrix[i][c];
+			if (p == nullptr)
+				continue;
+			for (auto s = p->begin(); s != p->end(); s++)
+			{
+				if (c != '\0')
+					fprintf(f, "\t%d->%d[label=\"%c\"];\n", i, *s, c);
+				else
+					fprintf(f, "\t%d->%d[label=\"¦Å\"];\n", i, *s);
+			}
+		}
+
+	}
+	fprintf(f, "}");
+	fclose(f);
+}
+

@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D3B044B5-966B-4DF5-8A16-B3B3420896EE}</ProjectGuid>
     <RootNamespace>Reg2NFA</RootNamespace>
+    <ProjectName>Reg2FA</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -68,12 +69,14 @@
   <ItemGroup>
     <ClCompile Include="ENFA.cpp" />
     <ClCompile Include="Lex.cpp" />
-    <ClCompile Include="Reg2NFA.cpp" />
+    <ClCompile Include="Reg2FA.cpp" />
+    <ClCompile Include="RegexParse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ENFA.h" />
     <ClInclude Include="Lex.h" />
-    <ClInclude Include="Reg2NFA.h" />
+    <ClInclude Include="Reg2FA.h" />
+    <ClInclude Include="RegexParse.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

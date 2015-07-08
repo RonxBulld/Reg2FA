@@ -15,24 +15,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Reg2NFA.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Lex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ENFA.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Reg2FA.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexParse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Reg2NFA.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Lex.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ENFA.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Reg2FA.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexParse.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
