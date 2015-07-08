@@ -14,7 +14,7 @@ void PrintSet(const std::set<int> *s)
 	TRACE("}");
 }
 
-void NFA2DFA(ENFA *nfa)
+void NFA2DFA(ENFA *nfa, DFA *dfa)
 {
 	/*
 	q0←ε-closure({n0});
@@ -38,37 +38,34 @@ void NFA2DFA(ENFA *nfa)
 	std::map<std::set<int>, int> SCDictionary;
 	SCDictionary.insert(std::pair<std::set<int>, int>(q0, 0));
 
-	std::vector<int*> DFATable;
-	int *tp = (int*)std::malloc(sizeof(int) * nfa->Alphabet.size());
-	std::memset(tp, -1, sizeof(int) * nfa->Alphabet.size());
-	DFATable.push_back(tp);
+	dfa->AppendState();
 
 	while (!WorkList.empty())
 	{
 		std::set<int> q = WorkList.front();
 		WorkList.pop();
-		for (auto cp = nfa->Alphabet.begin(); cp != nfa->Alphabet.end(); cp++)
+		for (int c = 0; c < MAX_CHARACTER; c++)
 		{
-			std::set<int> *t_tmp = nfa->Move(q, cp->first);
+			if (c == EMPTY_TRANSFORM)
+				continue;
+			std::set<int> *t_tmp = nfa->Move(q, c);
 			std::set<int> *t = nfa->EClosure(*t_tmp);
 			if (t->empty())
 				continue;
-			// TRACE("T["); PrintSet(&q); TRACE(", %d] = ", cp->first); PrintSet(t); TRACE("\n");
 			if (Q.insert(*t).second == true)
 			{
 				SCDictionary.insert(std::pair<std::set<int>, int>(*t, SCDictionary.size()));
-
-				int *tp = (int*)std::malloc(sizeof(int) * nfa->Alphabet.size());
-				std::memset(tp, -1, sizeof(int) * nfa->Alphabet.size());
-				DFATable.push_back(tp);
-
 				WorkList.push(*t);
-			}
 
-			DFATable[SCDictionary[q]][cp->second] = SCDictionary[*t];
-			TRACE("T[%d, %d(%d)] = %d\n", SCDictionary[q], cp->first, cp->second, DFATable[SCDictionary[q]][cp->second]);
+				dfa->AppendState();
+				if (t->find(nfa->FinalState) != t->end())
+					dfa->SetFinal(SCDictionary[*t]);
+			}
+			dfa->SetTransform(SCDictionary[q], c, SCDictionary[*t]);
 		}
 	}
+
+	
 }
 
 int main()
@@ -80,7 +77,9 @@ int main()
 	NFA->StartState = p->Head;
 	NFA->FinalState = p->Tail;
 
-	NFA->ToDot("t.gv");
-	NFA2DFA(NFA);
+	// NFA->ToDot("t.gv");
+	DFA *dfa = new DFA();
+	NFA2DFA(NFA, dfa);
+	dfa->ToDot("t.gv");
 	return 0;
 }

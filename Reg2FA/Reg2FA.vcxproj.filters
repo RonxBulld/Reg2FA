@@ -27,6 +27,9 @@
     <ClCompile Include="RegexParse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DFA.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lex.h">
@@ -39,6 +42,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RegexParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DFA.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

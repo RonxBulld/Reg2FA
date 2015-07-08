@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdio>
 #include "ENFA.h"
+#include "DFA.h"
 using namespace std;
 
 

@@ -67,12 +67,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DFA.cpp" />
     <ClCompile Include="ENFA.cpp" />
     <ClCompile Include="Lex.cpp" />
     <ClCompile Include="Reg2FA.cpp" />
     <ClCompile Include="RegexParse.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DFA.h" />
     <ClInclude Include="ENFA.h" />
     <ClInclude Include="Lex.h" />
     <ClInclude Include="Reg2FA.h" />

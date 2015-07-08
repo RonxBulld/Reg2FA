@@ -9,7 +9,7 @@ extern ENFA *NFA;
 */
 NFAPack *ParseReplay(NFAPack *p0)
 {
-	TRACE("%s\n", __func__);
+	// TRACE("%s\n", __func__);
 	Lexme l = Lex();
 	if (l.first == '*')
 	{
@@ -33,7 +33,7 @@ NFAPack *ParseReplay(NFAPack *p0)
 */
 NFAPack *ParseItem()
 {
-	TRACE("%s\n", __func__);
+	// TRACE("%s\n", __func__);
 	Lexme l = Lex();
 	NFAPack *p0 = nullptr;
 	if (l.first == Char)
@@ -65,7 +65,7 @@ NFAPack *ParseItem()
 */
 NFAPack *ParseStmt()
 {
-	TRACE("%s\n", __func__);
+	// TRACE("%s\n", __func__);
 	NFAPack *p0 = ParseItem();
 	if (p0 != nullptr)
 	{
