@@ -1,6 +1,9 @@
 #include <list>
 #include "DFA.h"
 
+#define IS_FINAL -1
+#define IS_NOT_FINAL -2
+
 inline bool DFA::IsValidState(int s)
 {
 	return (s >= 0 && s < this->DFATable.size());
@@ -55,6 +58,7 @@ void DFA::Minimum()
 	for (int s = 0; s < this->DFATable.size(); s++)
 	{
 		std::set<int> tmp;
+		tmp.insert(this->FinalTable[s] ? IS_FINAL : IS_NOT_FINAL);
 		for (auto cp = this->Alphabet.begin(); cp != this->Alphabet.end(); cp++)
 		{
 			tmp.insert(this->DFATable[s][*cp]);
