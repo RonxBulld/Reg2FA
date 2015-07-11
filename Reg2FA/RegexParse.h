@@ -3,6 +3,13 @@
 #include "Reg2FA.h"
 #include "Lex.h"
 
-NFAPack *ParseStmt();
-NFAPack *ParseItem();
-NFAPack *ParseReplay(NFAPack *p0);
+class Parser
+{
+private:
+	Lexer *Lex;
+public:
+	Parser(Lexer *Lex) :Lex(Lex) {}
+	NFAPack *ParseStmt(ENFA *NFA);
+	NFAPack *ParseItem(ENFA *NFA);
+	NFAPack *ParseReplay(ENFA *NFA, NFAPack *p0);
+};

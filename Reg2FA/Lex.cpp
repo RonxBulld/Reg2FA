@@ -1,10 +1,14 @@
 #include <cstring>
 #include "Lex.h"
 
-static char *src_str;
-void InitLexer(const char *str)
+Lexer::Lexer(const char *str)
 {
-	src_str = (char*)str;
+	this->InitLexer(str);
+}
+
+void Lexer::InitLexer(const char *str)
+{
+	this->src_str = (char*)str;
 }
 
 /*
@@ -18,33 +22,33 @@ char *strndup(char *s, int n)
 }
 */
 
-Lexme Lex()
+Lexer::Lexme Lexer::Lex()
 {
-	Lexme lm;
-	switch (*src_str)
+	Lexer::Lexme lm;
+	switch (*this->src_str)
 	{
 	case '|':
 	case '*': case '+':
 	case '(': case ')':
-		lm.first = (enum LexType)*src_str;
-		lm.second.c = *src_str++;
+		lm.first = (enum LexType)*this->src_str;
+		lm.second.c = *this->src_str++;
 		break;
 	case '\0':
-		lm.first = Eof;
-		lm.second.c = *src_str++;
+		lm.first = Lexer::Eof;
+		lm.second.c = *this->src_str++;
 		break;
 	default:
-		lm.first = Char;
-		lm.second.c = *src_str++;
+		lm.first = Lexer::Char;
+		lm.second.c = *this->src_str++;
 		break;
 	}
 	return lm;
 }
 
-void PushBack(const Lexme & L)
+void Lexer::PushBack(const Lexer::Lexme & L)
 {
-	if (L.first == Char || L.first == Eof || L.first < 127)
+	if (L.first == Lexer::Char || L.first == Lexer::Eof || L.first < 128)
 	{
-		src_str--;
+		this->src_str--;
 	}
 }

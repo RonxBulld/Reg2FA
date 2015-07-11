@@ -1,27 +1,26 @@
 #include "RegexParse.h"
 
-extern ENFA *NFA;
 /**
 * Replay : '*'
 *        | '+'
 *        |
 *        ;
 */
-NFAPack *ParseReplay(NFAPack *p0)
+NFAPack * Parser::ParseReplay(ENFA *nfa, NFAPack *p0)
 {
 	// TRACE("%s\n", __func__);
-	Lexme l = Lex();
+	Lexer::Lexme l = this->Lex->Lex();
 	if (l.first == '*')
 	{
-		p0 = NFA->MakeClosure(p0);
+		p0 = nfa->MakeClosure(p0);
 	}
 	else if (l.first == '+')
 	{
-		p0 = NFA->MakeClosurePlus(p0);
+		p0 = nfa->MakeClosurePlus(p0);
 	}
 	else
 	{
-		PushBack(l);
+		this->Lex->PushBack(l);
 	}
 	return p0;
 }
@@ -31,29 +30,29 @@ NFAPack *ParseReplay(NFAPack *p0)
 *      |
 *      ;
 */
-NFAPack *ParseItem()
+NFAPack * Parser::ParseItem(ENFA *nfa)
 {
 	// TRACE("%s\n", __func__);
-	Lexme l = Lex();
+	Lexer::Lexme l = this->Lex->Lex();
 	NFAPack *p0 = nullptr;
-	if (l.first == Char)
+	if (l.first == Lexer::Char)
 	{
-		p0 = NFA->MakeBasic(l.second.c);
-		p0 = ParseReplay(p0);
+		p0 = nfa->MakeBasic(l.second.c);
+		p0 = this->ParseReplay(nfa, p0);
 	}
 	else if (l.first == '(')
 	{
-		p0 = ParseStmt();
-		if (Lex().first != ')')
+		p0 = this->ParseStmt(nfa);
+		if (this->Lex->Lex().first != ')')
 		{
 			// error
 			fprintf(stderr, "except - )\n");
 		}
-		p0 = ParseReplay(p0);
+		p0 = this->ParseReplay(nfa, p0);
 	}
 	else
 	{
-		PushBack(l);
+		this->Lex->PushBack(l);
 	}
 	return p0;
 }
@@ -63,30 +62,30 @@ NFAPack *ParseItem()
 *      | Item '|' Item Stmt
 *      ;
 */
-NFAPack *ParseStmt()
+NFAPack * Parser::ParseStmt(ENFA *nfa)
 {
 	// TRACE("%s\n", __func__);
-	NFAPack *p0 = ParseItem();
+	NFAPack *p0 = this->ParseItem(nfa);
 	if (p0 != nullptr)
 	{
 		NFAPack *p1 = nullptr;
-		Lexme l = Lex();
+		Lexer::Lexme l = this->Lex->Lex();
 		if (l.first == '|')
 		{
-			p1 = ParseItem();
+			p1 = this->ParseItem(nfa);
 			if (p1 != nullptr)
 			{
-				p0 = NFA->MakeSelect(p0, p1);
+				p0 = nfa->MakeSelect(p0, p1);
 			}
 		}
 		else
 		{
-			PushBack(l);
+			this->Lex->PushBack(l);
 		}
-		p1 = ParseStmt();
+		p1 = this->ParseStmt(nfa);
 		if (p1 != nullptr)
 		{
-			p0 = NFA->MakeLink(p0, EMPTY_TRANSFORM, p1);
+			p0 = nfa->MakeLink(p0, EMPTY_TRANSFORM, p1);
 		}
 	}
 	return p0;

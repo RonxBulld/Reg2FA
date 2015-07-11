@@ -2,6 +2,7 @@ digraph G
 {
 	rankdir = "LR";
 	node[shape=circle];
+	title[shape=box label="RegEx = ab(cd+e|f*)*g"];
 	4[shape=doublecircle];
 	0->1[label="a"];
 	1->2[label="b"];

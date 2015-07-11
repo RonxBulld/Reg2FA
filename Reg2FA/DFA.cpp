@@ -9,6 +9,11 @@ inline bool DFA::IsValidState(int s)
 	return (s >= 0 && s < this->DFATable.size());
 }
 
+inline bool DFA::IsValidInput(char c)
+{
+	return (c >= 0 && c < MAX_CHARACTER);
+}
+
 void DFA::AppendState()
 {
 	int *tp = (int*)std::malloc(sizeof(int) * MAX_CHARACTER);
@@ -91,12 +96,61 @@ void DFA::Minimum()
 	this->DFATable.swap(NewDFATable);
 }
 
-void DFA::ToDot(const char *file)
+int DFA::Move(int s, char c)
+{
+	if (IsValidState(s) == false)
+	{
+		throw new std::exception("Bad source state.");
+	}
+	else if (IsValidInput(c) == false)
+	{
+		throw new std::exception("Bad input character.");
+	}
+	return this->DFATable[s][c];
+}
+
+bool DFA::IsFinalState(int s)
+{
+	if (IsValidState(s) == false)
+	{
+		throw new std::exception("Bad source state.");
+	}
+	return this->FinalTable[s];
+}
+
+const char *DFA::StringMove(const char *str)
+{
+	int cur_state = 0;
+	char *cur_p = (char*)str;
+	
+	int prev_match_state = 0;
+	char *next_match_char = cur_p;
+	
+	while (*cur_p != '\0')
+	{
+		cur_state = this->DFATable[cur_state][*cur_p++];
+		if (cur_state == -1)
+		{
+			cur_p = next_match_char;
+			break;
+		}
+		if (this->FinalTable[cur_state] == true)
+		{
+			next_match_char = cur_p;
+			prev_match_state = cur_state;
+		}
+	}
+
+	return (const char *)cur_p;
+}
+
+void DFA::ToDot(const char *title, const char *file)
 {
 	FILE *f;
 	fopen_s(&f, "t.gv", "wt+");
 	fprintf(f, "digraph G\n{\n\trankdir = \"LR\";\n");
 	fprintf(f, "\tnode[shape=circle];\n");
+	fprintf(f, "\ttitle[shape=box label=\"RegEx = %s\"];\n", title);
 	for (int i = 0; i < this->FinalTable.size(); i++)
 		if (this->FinalTable[i])
 			fprintf(f, "\t%d[shape=doublecircle];\n", i);

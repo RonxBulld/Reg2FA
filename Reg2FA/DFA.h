@@ -6,6 +6,7 @@ class DFA
 {
 private:
 	inline bool IsValidState(int s);
+	inline bool IsValidInput(char c);
 	std::set<int> Alphabet;
 public:
 	std::vector<int*> DFATable;
@@ -16,6 +17,9 @@ public:
 	void SetTransform(int src, char c, int dest);
 	void SetFinal(int s);
 	void Minimum();
-	void ToDot(const char *file);
+	int Move(int s, char c);
+	bool IsFinalState(int s);
+	const char *StringMove(const char *str);
+	void ToDot(const char *title, const char *file);
 	~DFA();
 };
