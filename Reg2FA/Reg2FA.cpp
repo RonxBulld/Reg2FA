@@ -37,6 +37,7 @@ void NFA2DFA(ENFA *nfa, DFA *dfa)
 	
 	std::map<std::set<int>, int> SCDictionary;
 	SCDictionary.insert(std::pair<std::set<int>, int>(q0, 0));
+	dfa->StartState = 0;
 
 	dfa->AppendState();
 
@@ -77,9 +78,9 @@ int main()
 	NFA->StartState = p->Head;
 	NFA->FinalState = p->Tail;
 
-	// NFA->ToDot("t.gv");
 	DFA *dfa = new DFA();
 	NFA2DFA(NFA, dfa);
+	dfa->Minimum();
 	dfa->ToDot("t.gv");
 	return 0;
 }

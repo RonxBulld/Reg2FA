@@ -1,3 +1,4 @@
+#include <list>
 #include "DFA.h"
 
 inline bool DFA::IsValidState(int s)
@@ -32,6 +33,7 @@ void DFA::SetTransform(int src, char c, int dest)
 		throw new std::exception("Multiple destination state.");
 	}
 	this->DFATable[src][c] = dest;
+	this->Alphabet.insert(c);
 }
 
 void DFA::SetFinal(int s)
@@ -41,6 +43,48 @@ void DFA::SetFinal(int s)
 		throw new std::exception("Bad state when set final.");
 	}
 	this->FinalTable[s] = true;
+}
+
+void DFA::Minimum()
+{
+	std::map<std::set<int>, int> ConvertTemp;
+	int n = this->DFATable.size();
+	std::vector<int> NewStatePoint(n, -1);
+	std::vector<int*> NewDFATable;
+	std::vector<bool> NewFinalTable;
+	for (int s = 0; s < this->DFATable.size(); s++)
+	{
+		std::set<int> tmp;
+		for (auto cp = this->Alphabet.begin(); cp != this->Alphabet.end(); cp++)
+		{
+			tmp.insert(this->DFATable[s][*cp]);
+		}
+		if (ConvertTemp.insert(std::pair<std::set<int>, int>(tmp, ConvertTemp.size())).second == true)
+		{
+			NewDFATable.push_back(this->DFATable[s]);
+			NewFinalTable.push_back(this->FinalTable[s]);
+		}
+		else
+		{
+			delete this->DFATable[s];
+		}
+		NewStatePoint[s] = ConvertTemp[tmp];
+		tmp.clear();
+	}
+	this->StartState = NewStatePoint[this->StartState];
+	// 1. Remove unnessary state (prev did)
+	// 2. Rewrite all tranform table
+	// 3. Rewrite start state and final state collection (prev did)
+	for (int i = 0; i < NewDFATable.size(); i++)
+	{
+		for (auto cp = this->Alphabet.begin(); cp != this->Alphabet.end(); cp++)
+		{
+			int os = NewDFATable[i][*cp];
+			if (os != -1)
+				NewDFATable[i][*cp] = NewStatePoint[os];
+		}
+	}
+	this->DFATable.swap(NewDFATable);
 }
 
 void DFA::ToDot(const char *file)

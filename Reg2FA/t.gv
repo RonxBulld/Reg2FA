@@ -10,12 +10,10 @@ digraph G
 	3->5[label="d"];
 	5->3[label="c"];
 	5->5[label="d"];
-	5->6[label="e"];
-	5->7[label="f"];
+	5->2[label="e"];
+	5->6[label="f"];
 	5->4[label="g"];
 	6->3[label="c"];
+	6->6[label="f"];
 	6->4[label="g"];
-	7->3[label="c"];
-	7->7[label="f"];
-	7->4[label="g"];
 }
