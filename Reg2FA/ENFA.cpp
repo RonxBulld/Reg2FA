@@ -3,6 +3,19 @@
 
 // --- Unitilies ---------------------------
 
+ENFA::~ENFA()
+{
+	for (std::vector<std::set<int>**>::iterator sp = this->TransMatrix.begin(); sp != this->TransMatrix.end(); sp++)
+	{
+		for (int i = 0; i < MAX_CHARACTER; i++)
+		{
+			if ((*sp)[i] != nullptr)
+				delete (*sp)[i];
+		}
+		delete *sp;
+	}
+}
+
 // --- Basic -----------------------------
 
 int ENFA::NewState()

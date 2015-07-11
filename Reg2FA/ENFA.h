@@ -27,6 +27,7 @@ public:
 	int NewState();
 	void LinkNode(int src, char c, int dest);
 	void ToDot(const char *file);
+	~ENFA();
 
 	NFAPack * MakeBasic(char c);
 	NFAPack * MakeLink(NFAPack *p0, char c, NFAPack *p1);

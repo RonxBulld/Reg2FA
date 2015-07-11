@@ -17,4 +17,5 @@ public:
 	void SetFinal(int s);
 	void Minimum();
 	void ToDot(const char *file);
+	~DFA();
 };

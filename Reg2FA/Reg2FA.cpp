@@ -4,6 +4,7 @@
 
 ENFA *NFA;
 
+/*
 void PrintSet(const std::set<int> *s)
 {
 	TRACE("{ ");
@@ -13,6 +14,7 @@ void PrintSet(const std::set<int> *s)
 	}
 	TRACE("}");
 }
+*/
 
 void NFA2DFA(ENFA *nfa, DFA *dfa)
 {
@@ -51,8 +53,12 @@ void NFA2DFA(ENFA *nfa, DFA *dfa)
 				continue;
 			std::set<int> *t_tmp = nfa->Move(q, c);
 			std::set<int> *t = nfa->EClosure(*t_tmp);
+			delete t_tmp;
 			if (t->empty())
+			{
+				delete t;
 				continue;
+			}
 			if (Q.insert(*t).second == true)
 			{
 				SCDictionary.insert(std::pair<std::set<int>, int>(*t, SCDictionary.size()));
@@ -63,6 +69,7 @@ void NFA2DFA(ENFA *nfa, DFA *dfa)
 					dfa->SetFinal(SCDictionary[*t]);
 			}
 			dfa->SetTransform(SCDictionary[q], c, SCDictionary[*t]);
+			delete t;
 		}
 	}
 
@@ -77,10 +84,13 @@ int main()
 	NFAPack *p = ParseStmt();
 	NFA->StartState = p->Head;
 	NFA->FinalState = p->Tail;
+	delete p;
 
 	DFA *dfa = new DFA();
 	NFA2DFA(NFA, dfa);
 	dfa->Minimum();
 	dfa->ToDot("t.gv");
+	delete dfa;
+
 	return 0;
 }

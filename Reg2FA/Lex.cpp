@@ -7,6 +7,7 @@ void InitLexer(const char *str)
 	src_str = (char*)str;
 }
 
+/*
 char *strndup(char *s, int n)
 {
 	int l = std::strlen(s);
@@ -15,6 +16,7 @@ char *strndup(char *s, int n)
 	strncpy_s(ns, l + 1, s, l);
 	return ns;
 }
+*/
 
 Lexme Lex()
 {

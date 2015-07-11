@@ -114,3 +114,11 @@ void DFA::ToDot(const char *file)
 	fprintf(f, "}");
 	fclose(f);
 }
+
+DFA::~DFA()
+{
+	for (auto sp = this->DFATable.begin(); sp != this->DFATable.end(); sp++)
+	{
+		delete *sp;
+	}
+}
