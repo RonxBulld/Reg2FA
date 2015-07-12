@@ -159,6 +159,8 @@ void ENFA::ToDot(const char *file)
 {
 	FILE *f;
 	fopen_s(&f, file, "wt+");
+	if (f == nullptr)
+		throw new std::exception("Cannot create/rewrite dot file.");
 	fprintf(f, "digraph G\n{\n\trankdir = \"LR\";\n");
 	fprintf(f, "\tnode[shape=circle];\n");
 	fprintf(f, "\t%d[shape=doublecircle];\n", this->FinalState);

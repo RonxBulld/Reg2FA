@@ -6,7 +6,7 @@
 
 inline bool DFA::IsValidState(int s)
 {
-	return (s >= 0 && s < this->DFATable.size());
+	return (s >= 0 && s < (int)this->DFATable.size());
 }
 
 inline bool DFA::IsValidInput(char c)
@@ -17,6 +17,8 @@ inline bool DFA::IsValidInput(char c)
 void DFA::AppendState()
 {
 	int *tp = (int*)std::malloc(sizeof(int) * MAX_CHARACTER);
+	if (tp == nullptr)
+		throw new std::exception("Out of memory.");
 	std::memset(tp, -1, sizeof(int) * MAX_CHARACTER);
 	this->DFATable.push_back(tp);
 	this->FinalTable.push_back(false);
@@ -60,7 +62,7 @@ void DFA::Minimum()
 	std::vector<int> NewStatePoint(n, -1);
 	std::vector<int*> NewDFATable;
 	std::vector<bool> NewFinalTable;
-	for (int s = 0; s < this->DFATable.size(); s++)
+	for (int s = 0; s < (int)this->DFATable.size(); s++)
 	{
 		std::set<int> tmp;
 		tmp.insert(this->FinalTable[s] ? IS_FINAL : IS_NOT_FINAL);
@@ -84,7 +86,7 @@ void DFA::Minimum()
 	// 1. Remove unnessary state (prev did)
 	// 2. Rewrite all tranform table
 	// 3. Rewrite start state and final state collection (prev did)
-	for (int i = 0; i < NewDFATable.size(); i++)
+	for (int i = 0; i < (int)NewDFATable.size(); i++)
 	{
 		for (auto cp = this->Alphabet.begin(); cp != this->Alphabet.end(); cp++)
 		{
@@ -147,14 +149,16 @@ const char *DFA::StringMove(const char *str)
 void DFA::ToDot(const char *title, const char *file)
 {
 	FILE *f;
-	fopen_s(&f, "t.gv", "wt+");
+	fopen_s(&f, file, "wt+");
+	if (f == nullptr)
+		throw new std::exception("Cannot create/rewrite dot file.");
 	fprintf(f, "digraph G\n{\n\trankdir = \"LR\";\n");
 	fprintf(f, "\tnode[shape=circle];\n");
 	fprintf(f, "\ttitle[shape=box label=\"RegEx = %s\"];\n", title);
-	for (int i = 0; i < this->FinalTable.size(); i++)
+	for (int i = 0; i < (int)this->FinalTable.size(); i++)
 		if (this->FinalTable[i])
 			fprintf(f, "\t%d[shape=doublecircle];\n", i);
-	for (int s = 0; s < this->DFATable.size(); s++)
+	for (int s = 0; s < (int)this->DFATable.size(); s++)
 	{
 		for (int c = 0; c < MAX_CHARACTER; c++)
 		{
