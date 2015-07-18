@@ -1,6 +1,11 @@
 #include <cstring>
 #include "Lex.h"
 
+inline bool isDigit(char c)
+{
+	return (c >= '0' && c <= '9');
+}
+
 Lexer::Lexer(const char *str)
 {
 	this->InitLexer(str);
@@ -17,7 +22,7 @@ char *strndup(char *s, int n)
 	int l = std::strlen(s);
 	l = n < l ? n : l;
 	char *ns = (char*)std::malloc(l + 1);
-	strncpy_s(ns, l + 1, s, l);
+	STRNCPY(ns, l + 1, s, l);
 	return ns;
 }
 */
@@ -37,6 +42,8 @@ Lexer::Lexme Lexer::Lex()
 		lm.first = Lexer::Eof;
 		lm.second.c = *this->src_str++;
 		break;
+	case '\\':
+		this->src_str++;
 	default:
 		lm.first = Lexer::Char;
 		lm.second.c = *this->src_str++;
