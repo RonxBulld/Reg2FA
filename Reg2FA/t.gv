@@ -7,14 +7,9 @@ digraph G
 	0->1[label="a"];
 	1->2[label="b"];
 	2->3[label="c"];
+	2->2[label="f"];
 	2->4[label="g"];
 	3->5[label="d"];
-	5->3[label="c"];
 	5->5[label="d"];
 	5->2[label="e"];
-	5->6[label="f"];
-	5->4[label="g"];
-	6->3[label="c"];
-	6->6[label="f"];
-	6->4[label="g"];
 }

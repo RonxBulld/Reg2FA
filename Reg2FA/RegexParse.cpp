@@ -25,12 +25,11 @@ NFAPack * Parser::ParseReplay(ENFA *nfa, NFAPack *p0)
 	return p0;
 }
 /**
-* Item : CHAR Replay
-*      | '(' Stmt ')' Replay
-*      |
+* Meta : CHAR Replay
+*      | CHAR Replay Meta
 *      ;
 */
-NFAPack * Parser::ParseItem(ENFA *nfa)
+NFAPack * Parser::ParseMeta(ENFA *nfa)
 {
 	// TRACE("%s\n", __func__);
 	Lexer::Lexme l = this->Lex->Lex();
@@ -39,20 +38,48 @@ NFAPack * Parser::ParseItem(ENFA *nfa)
 	{
 		p0 = nfa->MakeBasic(l.second.c);
 		p0 = this->ParseReplay(nfa, p0);
-	}
-	else if (l.first == '(')
-	{
-		p0 = this->ParseStmt(nfa);
-		if (this->Lex->Lex().first != ')')
+		NFAPack *p1 = this->ParseMeta(nfa);
+		if (p1 != nullptr)
 		{
-			// error
-			fprintf(stderr, "except - )\n");
+			p0 = nfa->MakeLink(p0, EMPTY_TRANSFORM, p1);
 		}
-		p0 = this->ParseReplay(nfa, p0);
 	}
 	else
 	{
 		this->Lex->PushBack(l);
+	}
+	return p0;
+}
+/**
+* Item : Meta
+*      | '(' Stmt ')' Replay
+*      |
+*      ;
+*/
+NFAPack * Parser::ParseItem(ENFA *nfa)
+{
+	// TRACE("%s\n", __func__);
+	NFAPack *p0 = this->ParseMeta(nfa);
+	if (p0 != nullptr)
+	{
+	}
+	else
+	{
+		Lexer::Lexme l = this->Lex->Lex();
+		if (l.first == '(')
+		{
+			p0 = this->ParseStmt(nfa);
+			if (this->Lex->Lex().first != ')')
+			{
+				// error
+				fprintf(stderr, "except - )\n");
+			}
+			p0 = this->ParseReplay(nfa, p0);
+		}
+		else
+		{
+			this->Lex->PushBack(l);
+		}
 	}
 	return p0;
 }

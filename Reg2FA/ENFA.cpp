@@ -155,7 +155,7 @@ std::set<int> * ENFA::EClosure(std::set<int> &Q)
 		return qn;
 }
 
-void ENFA::ToDot(const char *file)
+void ENFA::ToDot(const char *title, const char *file)
 {
 	FILE *f;
 	fopen_s(&f, file, "wt+");
@@ -164,6 +164,7 @@ void ENFA::ToDot(const char *file)
 	fprintf(f, "digraph G\n{\n\trankdir = \"LR\";\n");
 	fprintf(f, "\tnode[shape=circle];\n");
 	fprintf(f, "\t%d[shape=doublecircle];\n", this->FinalState);
+	fprintf(f, "\ttitle[shape=box label=\"RegEx = %s\"];\n", title);
 	for (int i = 0; i < (int)this->TransMatrix.size(); i++)
 	{
 		for (int c = 0; c < MAX_CHARACTER; c++)

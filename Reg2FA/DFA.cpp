@@ -83,6 +83,7 @@ void DFA::Minimum()
 		tmp.clear();
 	}
 	this->StartState = NewStatePoint[this->StartState];
+	this->FinalTable.swap(NewFinalTable);
 	// 1. Remove unnessary state (prev did)
 	// 2. Rewrite all tranform table
 	// 3. Rewrite start state and final state collection (prev did)

@@ -87,6 +87,7 @@ public:
 			return false;
 		nfa.StartState = p->Head;
 		nfa.FinalState = p->Tail;
+		// nfa.ToDot(regex, "t.gv");
 		delete p;
 
 		this->NFA2DFA(&nfa, &this->dfa);
@@ -108,7 +109,9 @@ public:
 
 int main(int argc, char **argv)
 {
+	char *test = new char[10];
 	LexRegEx re;
+	int RunCode = 0;
 	if (argc == 4)
 	{
 		// re.SetRegex("ab(cd+e|f*)*g");
@@ -116,13 +119,14 @@ int main(int argc, char **argv)
 		re.SetRegex(argv[1]);
 		const char *v = re.Match(argv[2]);
 		if (std::strcmp(argv[3], v) == 0)
-			return 0;
+			RunCode = 0;
 		else
-			return 1;
+			RunCode = 1;
 	}
 	else
 	{
-		printf("Usage: clre.exe <Regular-Expressions> <Test-String> <Verify-String>\n");
-		return 2;
+		printf("Usage: %s <Regular-Expressions> <Test-String> <Verify-String>\n", argv[0]);
+		RunCode = 2;
 	}
+	return RunCode;
 }
