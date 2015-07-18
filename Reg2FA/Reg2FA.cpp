@@ -102,7 +102,7 @@ public:
 		char *match_str = (char*)std::malloc(sizeof(char) * (next - str + 1));
 		if (match_str == nullptr)
 			throw new std::exception("Out of memory.");
-		strncpy_s(match_str, next - str + 1, str, next - str);
+		STRNCPY(match_str, next - str + 1, str, next - str);
 		return match_str;
 	}
 };

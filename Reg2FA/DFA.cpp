@@ -150,7 +150,7 @@ const char *DFA::StringMove(const char *str)
 void DFA::ToDot(const char *title, const char *file)
 {
 	FILE *f;
-	fopen_s(&f, file, "wt+");
+	FOPEN(f, file, "wt+");
 	if (f == nullptr)
 		throw new std::exception("Cannot create/rewrite dot file.");
 	fprintf(f, "digraph G\n{\n\trankdir = \"LR\";\n");
